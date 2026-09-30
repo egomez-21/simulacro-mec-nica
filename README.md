@@ -1,1 +1,1 @@
-# simulacro-mec-nica
+# simulacro-mecanica
