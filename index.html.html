@@ -1,0 +1,1264 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEP - Pruebas Nacionales Estandarizadas - Mecánica de Precisión</title>
+    <style>
+        :root {
+            --mep-azul: #003366;
+            --mep-azul-oscuro: #002244;
+            --mep-rojo: #CE1126;
+            --mep-gris-bg: #f4f6f9;
+            --mep-texto: #222222;
+            --mep-correcto: #2e7d32;
+            --mep-incorrecto: #c62828;
+            --mep-revision: #f57f17;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--mep-gris-bg);
+            color: var(--mep-texto);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Encabezado Institucional MEP */
+        header {
+            background-color: var(--mep-azul);
+            color: white;
+            padding: 12px 20px;
+            border-bottom: 5px solid var(--mep-rojo);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mep-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .mep-logo-text {
+            border-left: 2px solid rgba(255,255,255,0.4);
+            padding-left: 15px;
+        }
+
+        .mep-logo-text h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .mep-logo-text h2 {
+            font-size: 0.85rem;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        .exam-info {
+            text-align: right;
+            font-size: 0.85rem;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+
+        /* Contenedor Principal */
+        .main-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 15px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            flex: 1;
+        }
+
+        @media (max-width: 850px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Área de Pregunta */
+        .question-card {
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--mep-azul);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--mep-azul);
+        }
+
+        .question-subarea {
+            font-size: 0.8rem;
+            background: #e8f0fe;
+            color: var(--mep-azul);
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .question-image {
+            margin: 15px 0;
+            text-align: center;
+            background: #fafafa;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* Opciones de Respuesta */
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .option-btn {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .option-btn:hover {
+            background: #f0f4f8;
+            border-color: var(--mep-azul);
+        }
+
+        .option-btn.selected {
+            border-color: var(--mep-azul);
+            background: #e8f0fe;
+            font-weight: 600;
+        }
+
+        .option-btn.correct {
+            background-color: #e8f5e9 !important;
+            border-color: var(--mep-correcto) !important;
+            color: var(--mep-correcto);
+            font-weight: bold;
+        }
+
+        .option-btn.incorrect {
+            background-color: #ffebee !important;
+            border-color: var(--mep-incorrecto) !important;
+            color: var(--mep-incorrecto);
+        }
+
+        .option-letter {
+            width: 26px;
+            height: 26px;
+            background: #eee;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 12px;
+            flex-shrink: 0;
+            font-size: 0.85rem;
+            color: #444;
+        }
+
+        .option-btn.selected .option-letter {
+            background: var(--mep-azul);
+            color: white;
+        }
+
+        .option-btn.correct .option-letter {
+            background: var(--mep-correcto);
+            color: white;
+        }
+
+        .option-btn.incorrect .option-letter {
+            background: var(--mep-incorrecto);
+            color: white;
+        }
+
+        /* Explicación Pedagógica */
+        .explanation-box {
+            display: none;
+            background: #fff8e1;
+            border-left: 4px solid #ffa000;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .explanation-title {
+            font-weight: bold;
+            color: #b78103;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Botones de Navegación */
+        .nav-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--mep-azul);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--mep-azul-oscuro);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .btn-review {
+            background: #fff3e0;
+            color: #e65100;
+            border: 1px solid #ffe0b2;
+        }
+
+        .btn-review:hover {
+            background: #ffe0b2;
+        }
+
+        /* Rejilla Lateral de Navegación */
+        .sidebar {
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            height: fit-content;
+        }
+
+        .sidebar-title {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--mep-azul);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 8px;
+        }
+
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin-bottom: 20px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .grid-item {
+            width: 100%;
+            aspect-ratio: 1;
+            border: 1px solid #ccc;
+            background: white;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .grid-item:hover {
+            border-color: var(--mep-azul);
+            background: #f0f4f8;
+        }
+
+        .grid-item.active {
+            border: 2px solid var(--mep-azul);
+            background: #e8f0fe;
+            color: var(--mep-azul);
+        }
+
+        .grid-item.answered {
+            background: #e8f5e9;
+            border-color: #a5d6a7;
+            color: var(--mep-correcto);
+        }
+
+        .grid-item.flagged {
+            background: #fff8e1;
+            border-color: #ffe082;
+            color: var(--mep-revision);
+        }
+
+        .summary-box {
+            font-size: 0.85rem;
+            line-height: 1.8;
+            background: #fafafa;
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+
+        /* Pantalla de Resultados */
+        .results-card {
+            display: none;
+            background: white;
+            border-radius: 6px;
+            padding: 30px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--mep-azul);
+            margin: 15px 0;
+        }
+
+        .score-status {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background: #e0e0e0;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.8rem;
+            color: #555;
+            margin-top: auto;
+        }
+
+        code {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <div class="mep-logo">
+                <div style="font-weight: 900; font-size: 1.5rem; letter-spacing: -1px;">MEP</div>
+                <div class="mep-logo-text">
+                    <h1>Ministerio de Educación Pública</h1>
+                    <h2>Dirección de Gestión y Evaluación de la Calidad (DGEC)</h2>
+                </div>
+            </div>
+            <div class="exam-info">
+                <strong>PRUEBA NACIONAL ESTANDARIZADA 2026</strong><br>
+                Especialidad Técnico-Profesional: <em>Mecánica de Precisión</em>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        
+        <!-- Panel de Preguntas -->
+        <main id="quiz-panel" class="question-card">
+            <div>
+                <div class="question-header">
+                    <span class="question-number" id="q-number">Pregunta 1 de 60</span>
+                    <span class="question-subarea" id="q-subarea">Subárea: Metrología y Mecanizado</span>
+                </div>
+
+                <div class="question-text" id="q-text">
+                    Cargando pregunta...
+                </div>
+
+                <div id="q-image-container" class="question-image" style="display: none;">
+                    <!-- Gráficos dinámicos SVG -->
+                </div>
+
+                <div class="options-container" id="options-container">
+                    <!-- Las opciones se cargan dinámicamente -->
+                </div>
+
+                <div class="explanation-box" id="explanation-box">
+                    <div class="explanation-title">💡 Justificación Técnica / Paso a Paso:</div>
+                    <div id="explanation-text"></div>
+                </div>
+            </div>
+
+            <div class="nav-controls">
+                <button class="btn btn-secondary" id="btn-prev" onclick="changeQuestion(-1)">Anterior</button>
+                <button class="btn btn-review" id="btn-flag" onclick="toggleFlag()">Marcar para revisión</button>
+                <button class="btn btn-primary" id="btn-next" onclick="changeQuestion(1)">Siguiente</button>
+            </div>
+        </main>
+
+        <!-- Pantalla Final de Resultados -->
+        <div id="results-panel" class="results-card" style="display: none;">
+            <h2>Resultado de la Evaluación Simulada</h2>
+            <p>Especialidad: Mecánica de Precisión - MEP Costa Rica</p>
+            <div class="score-display" id="score-val">0.0%</div>
+            <div class="score-status" id="score-status">---</div>
+            <p id="score-details" style="margin-bottom: 25px;"></p>
+            <button class="btn btn-primary" onclick="restartQuiz()">Reiniciar Evaluación</button>
+        </div>
+
+        <!-- Lateral: Navegador de Preguntas -->
+        <aside class="sidebar">
+            <div class="sidebar-title">Mapa de la Prueba</div>
+            <div class="question-grid" id="question-grid">
+                <!-- Íconos de pregunta 1 a 60 -->
+            </div>
+            <div class="summary-box">
+                <div><strong>Respondidas:</strong> <span id="count-answered">0</span>/60</div>
+                <div><strong>En Revisión:</strong> <span id="count-flagged">0</span></div>
+                <div><strong>Pendientes:</strong> <span id="count-pending">60</span></div>
+            </div>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 15px; background: #2e7d32;" onclick="finishQuiz()">Finalizar Prueba</button>
+        </aside>
+
+    </div>
+
+    <footer>
+        Plataforma Oficial de Práctica - Especialidad Técnica en Mecánica de Precisión | Dirección de Educación Técnica y Capacidades Emprendedoras (DETCE) / DGEC - MEP Costa Rica 2026.
+    </footer>
+
+    <script>
+        // Banco Extensivo de 60 Preguntas Reales de Selección Única A, B, C, D
+        const questions = [
+            {
+                id: 1,
+                subarea: "Metrología Dimensional",
+                text: "En un calibrador pie de rey con resolución de 0,02 mm, la escala principal muestra 24 mm pasados y la división número 18 del vernier coincide exactamente con una línea de la escala principal. ¿Cuál es la lectura total?",
+                options: ["A) 24,18 mm", "B) 24,36 mm", "C) 24,09 mm", "D) 24,90 mm"],
+                correct: 1,
+                explanation: "Lectura = Escala principal + (Coincidencia vernier × Resolución) = 24,00 mm + (18 × 0,02 mm) = 24,00 mm + 0,36 mm = <b>24,36 mm</b>."
+            },
+            {
+                id: 2,
+                subarea: "Mecanizado por Torno",
+                text: "Se requiere cilindrar un eje de 50 mm de diámetro en acero AISI 1020 con una velocidad de corte recomendada (Vc) de 30 m/min. ¿A cuántas RPM debe configurarse el torno?",
+                options: ["A) 191 RPM", "B) 382 RPM", "C) 150 RPM", "D) 600 RPM"],
+                correct: 0,
+                explanation: "Fórmula de RPM: N = (Vc × 1000) / (π × D) = (30 × 1000) / (3,1416 × 50) = 30000 / 157,08 ≈ <b>191 RPM</b>."
+            },
+            {
+                id: 3,
+                subarea: "Programación CNC (CAD/CAM)",
+                text: "En la programación de fresado CNC con control FANUC, ¿cuál es la función del código preparatorio G41?",
+                options: [
+                    "A) Cancelar la compensación de radio de herramienta.",
+                    "B) Activar la compensación de radio a la izquierda del perfil.",
+                    "C) Activar la compensación de radio a la derecha del perfil.",
+                    "D) Programar coordenadas incrementales."
+                ],
+                correct: 1,
+                explanation: "G40 cancela la compensación de radio, G41 compensa a la <b>izquierda</b> de la trayectoria y G42 compensa a la derecha."
+            },
+            {
+                id: 4,
+                subarea: "Metrología Dimensional (Micrómetro)",
+                text: "En un micrómetro en mm (resolución 0,01 mm), el cilindro fijo marca 12 mm más la subdivisión de 0,5 mm visible. El tambor móvil coincide en la división 32. ¿Cuál es la medida registrada?",
+                options: ["A) 12,32 mm", "B) 12,82 mm", "C) 12,50 mm", "D) 13,32 mm"],
+                correct: 1,
+                explanation: "Lectura = Cilindro fijo (12,00 mm) + Subdivisión (0,50 mm) + Tambor móvil (0,32 mm) = <b>12,82 mm</b>."
+            },
+            {
+                id: 5,
+                subarea: "Fresadora y Divisor Universal",
+                text: "Se desea realizar una división indirecta en el aparato divisor (relación K = 40:1) para mecanizar un engranaje de Z = 30 dientes. Indique el movimiento de la manivela.",
+                options: [
+                    "A) 1 vuelta completa y 10 agujeros en el disco de 30.",
+                    "B) 1 vuelta completa y 6 agujeros en el disco de 18.",
+                    "C) 1 vuelta completa y 8 agujeros en el disco de 24.",
+                    "D) 1 vuelta completa y 10 agujeros en la circunferencia de 15 agujeros."
+                ],
+                correct: 3,
+                explanation: "F = K / Z = 40 / 30 = 1 vuelta y 10/30. Simplificando 10/30 = 1/3 = 10/15. Por tanto, <b>1 vuelta y 10 agujeros en el disco de 15 agujeros</b>."
+            },
+            {
+                id: 6,
+                subarea: "Siderurgia y Materiales",
+                text: "El producto líquido primario rico en carbono (3,5% a 4,5%) extraído directamente del Alto Horno se denomina:",
+                options: ["A) Acero eutectectoque", "B) Arrabio", "C) Chatarra refinada", "D) Escoria"],
+                correct: 1,
+                explanation: "El producto inicial extraído de la base del Alto Horno es el <b>arrabio</b> (hierro de primera fusión), el cual luego se refina en el convertidor para obtener acero."
+            },
+            {
+                id: 7,
+                subarea: "Tecnología de Soldadura",
+                text: "En la especificación AWS para electrodos de soldadura SMAW (ejemplo: E-7018), el tercer dígito ('1') indica:",
+                options: [
+                    "A) Resistencia a la tensión en miles de PSI.",
+                    "B) Tipo de corriente y revestimiento.",
+                    "C) Posición para soldar (1 = todas las posiciones).",
+                    "D) Porcentaje de polvo de hierro."
+                ],
+                correct: 2,
+                explanation: "El tercer dígito especifica las posiciones de soldadura: 1 significa que se puede utilizar en <b>todas las posiciones</b> (plana, horizontal, vertical y sobre cabeza)."
+            },
+            {
+                id: 8,
+                subarea: "Gestión y Emprendimiento",
+                text: "Un taller gasta ₡120.000 en materia prima y ₡80.000 en mano de obra directa. Si aplica un 35% de margen de utilidad sobre el costo total, ¿cuál es el precio de venta?",
+                options: ["A) ₡200.000", "B) ₡270.000", "C) ₡245.000", "D) ₡320.000"],
+                correct: 1,
+                explanation: "Costo Total = ₡120.000 + ₡80.000 = ₡200.000. Utilidad (35%) = ₡200.000 × 0,35 = ₡70.000. Precio de Venta = ₡200.000 + ₡70.000 = <b>₡270.000</b>."
+            },
+            {
+                id: 9,
+                subarea: "Programación CNC (Códigos M)",
+                text: "Para encender el husillo en sentido horario (CW) y activar el fluido refrigerante de corte, se utilizan los códigos misceláneos:",
+                options: [
+                    "A) M03 y M08",
+                    "B) M04 y M09",
+                    "C) M05 y M08",
+                    "D) M30 y M06"
+                ],
+                correct: 0,
+                explanation: "<b>M03</b> enciende el husillo en sentido horario (CW) y <b>M08</b> activa el paso del refrigerante de corte."
+            },
+            {
+                id: 10,
+                subarea: "Tolerancias e ISO",
+                text: "En la especificación de tolerancia ISO ⌀40 H7, la letra mayúscula 'H' representa:",
+                options: [
+                    "A) La calidad de tolerancia del eje.",
+                    "B) La posición de la zona de tolerancia del agujero (desviación inferior igual a cero).",
+                    "C) La rugosidad superficial requerida.",
+                    "D) El límite máximo de interferencia."
+                ],
+                correct: 1,
+                explanation: "Las letras mayúsculas corresponden a <b>agujeros</b>. La letra H indica que la desviación inferior es cero (sistema de agujero único)."
+            },
+            {
+                id: 11,
+                subarea: "Mecanizado por Torno",
+                text: "Se mecaniza un cono con diámetro mayor D = 40 mm, diámetro menor d = 30 mm y longitud L = 50 mm. El ángulo de inclinación del charriot (α) es:",
+                options: ["A) 5,71°", "B) 11,42°", "C) 2,86°", "D) 15,00°"],
+                correct: 0,
+                explanation: "tan(α) = (D - d) / (2 × L) = (40 - 30) / (2 × 50) = 10 / 100 = 0,10. α = arctan(0,10) ≈ <b>5,71°</b>."
+            },
+            {
+                id: 12,
+                subarea: "Herramientas de Banco",
+                text: "Para cortar tubos de pared delgada de acero con sierra de mano, la cantidad recomendada de dientes por pulgada (TPI) es:",
+                options: ["A) 14 TPI", "B) 18 TPI", "C) 24 a 32 TPI", "D) 8 TPI"],
+                correct: 2,
+                explanation: "En tubos de pared delgada se requiere mayor densidad de dientes (<b>24 a 32 TPI</b>) para asegurar que al menos dos dientes estén simultáneamente apoyados y evitar roturas."
+            },
+            {
+                id: 13,
+                subarea: "Programación CNC",
+                text: "La interpolación circular en sentido anti-horario en el plano XY se programa con el código:",
+                options: ["A) G00", "B) G01", "C) G02", "D) G03"],
+                correct: 3,
+                explanation: "G02 es interpolación circular en sentido horario (CW) y <b>G03</b> en sentido anti-horario (CCW)."
+            },
+            {
+                id: 14,
+                subarea: "Tratamientos Térmicos",
+                text: "El tratamiento térmico que consiste en calentar el acero y enfriarlo de forma rápida en agua o aceite para obtener la máxima dureza se denomina:",
+                options: ["A) Recocido", "B) Normalizado", "C) Temple", "D) Revenido"],
+                correct: 2,
+                explanation: "El <b>temple</b> transforma la estructura austenítica en martensita mediante un enfriamiento brusco para aumentar drásticamente la dureza."
+            },
+            {
+                id: 15,
+                subarea: "Engranajes Rectos",
+                text: "Calcule el diámetro primitivo (Dp) de un engranaje recto con Z = 40 dientes y Módulo M = 2,5 mm.",
+                options: ["A) 100 mm", "B) 105 mm", "C) 95 mm", "D) 16 mm"],
+                correct: 0,
+                explanation: "Diámetro primitivo Dp = M × Z = 2,5 × 40 = <b>100 mm</b>."
+            },
+            {
+                id: 16,
+                subarea: "Dibujo Técnico",
+                text: "En el Sistema Europeo de Proyección (ISO E / Primer Cuadrante), la vista izquierda se dibuja con respecto a la vista frontal a la:",
+                options: ["A) Izquierda", "B) Derecha", "C) Parte superior", "D) Parte inferior"],
+                correct: 1,
+                explanation: "En el sistema europeo (ISO E) la vista tomada desde la izquierda se proyecta y dibuja a la <b>derecha</b> de la vista frontal."
+            },
+            {
+                id: 17,
+                subarea: "Taladrado",
+                text: "El ángulo estándar de afilado de la punta de una broca helicoidal de HSS para aceros de uso general es:",
+                options: ["A) 90°", "B) 118°", "C) 135°", "D) 60°"],
+                correct: 1,
+                explanation: "El ángulo universal estándar para taladrar aceros comerciales de dureza media es de <b>118°</b>."
+            },
+            {
+                id: 18,
+                subarea: "Soldadura TIG",
+                text: "En el proceso de soldadura TIG (GTAW), el electrodo no consumible utilizado para generar el arco eléctrico es de:",
+                options: ["A) Tungsteno", "B) Grafito", "C) Cobalto", "D) Cobre"],
+                correct: 0,
+                explanation: "El proceso GTAW (TIG) utiliza un electrodo no consumible refractario de <b>Tungsteno</b>."
+            },
+            {
+                id: 19,
+                subarea: "Matricería",
+                text: "En un molde de inyección de plásticos, el conducto cónico principal por donde ingresa el material fundido desde la boquilla se llama:",
+                options: ["A) Botador", "B) Bebebedero o Sprue", "C) Cavidad hembra", "D) Corredera"],
+                correct: 1,
+                explanation: "El canal de entrada principal desde la boquilla de la máquina inyectora al molde se denomina <b>bebedero o sprue</b>."
+            },
+            {
+                id: 20,
+                subarea: "Programación CNC",
+                text: "Los códigos preparatorios para fijar el origen de coordenadas de trabajo (cero pieza) en un control FANUC son:",
+                options: ["A) G54 a G59", "B) G20 a G21", "C) G28 a G30", "D) G90 a G91"],
+                correct: 0,
+                explanation: "Los decalajes estándar de cero pieza van desde <b>G54 hasta G59</b>."
+            },
+            {
+                id: 21,
+                subarea: "Metrología Dimensional",
+                text: "En un calibrador vernier en pulgadas con resolución de 1/128\", la escala principal indica 1 pulgada con 3/8\" y la coincidencia en el vernier marca la 3ra división. ¿Cuál es la lectura?",
+                options: ["A) 1 27/128\"", "B) 1 51/128\"", "C) 1 35/128\"", "D) 1 3/64\""],
+                correct: 1,
+                explanation: "1 3/8\" = 1 48/128\". Sumando las 3 divisiones del vernier: 48/128\" + 3/128\" = <b>1 51/128\"</b>."
+            },
+            {
+                id: 22,
+                subarea: "Mecanizado por Torno",
+                text: "Para refrentar una pieza en el torno, ¿cómo se debe posicionar la punta de la herramienta de corte con respecto al eje de rotación de la pieza?",
+                options: [
+                    "A) Ligeramente por encima del centro.",
+                    "B) Exactamente a la altura del centro.",
+                    "C) Ligeramente por debajo del centro.",
+                    "D) A un ángulo de 45° sin importar la altura."
+                ],
+                correct: 1,
+                explanation: "En la operación de refrentado, la herramienta debe estar <b>exactamente a la altura del centro</b> para evitar dejar un tetón en el centro de la pieza."
+            },
+            {
+                id: 23,
+                subarea: "Fresadora",
+                text: "En el fresado en contradirección (fresado convencional), el movimiento del diente de la fresa en la zona de corte es:",
+                options: [
+                    "A) En la misma dirección que el avance de la mesa.",
+                    "B) En dirección opuesta al avance de la mesa.",
+                    "C) Perpendicular al avance de la mesa.",
+                    "D) Estático mientras se mueve la pieza."
+                ],
+                correct: 1,
+                explanation: "En el fresado convencional o en contradirección, el diente de la fresa rota en <b>dirección opuesta</b> al sentido de avance de la pieza."
+            },
+            {
+                id: 24,
+                subarea: "Taladrado",
+                text: "El fenómeno que ocurre cuando la velocidad de corte es excesiva al taladrar un metal es:",
+                options: [
+                    "A) Rotura del mango de la broca.",
+                    "B) Desgaste prematuro y quemado de los filos de corte de la broca.",
+                    "C) Desviación del diámetro sin generar calor.",
+                    "D) Acabado tipo espejo en la perforación."
+                ],
+                correct: 1,
+                explanation: "El exceso de RPM genera temperatura extrema por fricción, lo que destempla y <b>quema los filos de la broca</b>."
+            },
+            {
+                id: 25,
+                subarea: "Siderurgia",
+                text: "El porcentaje de carbono presente en los aceros oscila técnicamente entre:",
+                options: ["A) 0,008% y 2,11%", "B) 2,11% y 6,67%", "C) 5,00% y 10,00%", "D) 0,001% y 0,005%"],
+                correct: 0,
+                explanation: "El límite práctico de carbono para definir a una aleación Hierro-Carbono como **acero** es entre **0,008% y 2,11%**. Por encima de 2,11% se consideran fundiciones."
+            },
+            {
+                id: 26,
+                subarea: "Soldadura MIG/MAG",
+                text: "En el proceso de soldadura MAG (GMAW), el gas de protección utilizado es de tipo:",
+                options: ["A) Inerte puro (Argón o Helio)", "B) Activo (Dióxido de carbono CO2 o mezclas con O2)", "C) Aire comprimido", "D) Nitrógeno líquido"],
+                correct: 1,
+                explanation: "MAG significa *Metal Active Gas*. Utiliza gases **activos** como CO2 puro o mezclas de Argón + CO2."
+            },
+            {
+                id: 27,
+                subarea: "Metrología Dimensional",
+                text: "Un micrómetro de profundidad se diferencia del micrómetro de exteriores en que su escala en el cilindro fijo:",
+                options: [
+                    "A) Aumenta hacia la derecha como de costumbre.",
+                    "B) Está graduada en sentido inverso (aumenta hacia la izquierda).",
+                    "C) No utiliza tambor móvil.",
+                    "D) Lee únicamente en pulgadas."
+                ],
+                correct: 1,
+                explanation: "En los micrómetros de profundidad, la escala está **graduada de manera inversa**, de modo que al adentrarse la espiga, el valor numérico aumenta."
+            },
+            {
+                id: 28,
+                subarea: "Programación CNC",
+                text: "El código G90 en una máquina herramienta CNC establece la programación en:",
+                options: ["A) Coordenadas incrementales", "B) Coordenadas absolutas", "C) Coordenadas polares", "D) Unidades en pulgadas"],
+                correct: 1,
+                explanation: "<b>G90</b> activa el modo de coordenadas **absolutas** (todas las cotas se refieren al origen de pieza), mientras que G91 es incremental."
+            },
+            {
+                id: 29,
+                subarea: "Gestión y Emprendimiento",
+                text: "En el estudio de mercado, la oferta se define como:",
+                options: [
+                    "A) La cantidad de bienes que los compradores están dispuestos a adquirir.",
+                    "B) La cantidad de bienes o servicios que los productores están dispuestos a vender a un precio dado.",
+                    "C) El porcentaje de impuestos a pagar.",
+                    "D) El valor de depreciación de las máquinas."
+                ],
+                correct: 1,
+                explanation: "La **oferta** es la cantidad de producto que los fabricantes/vendedores ponen a disposición en el mercado a un determinado precio."
+            },
+            {
+                id: 30,
+                subarea: "Herramientas de Banco",
+                text: "El machuelo de roscar manual identificado con el número 1 en un juego de tres piezas se caracteriza por poseer:",
+                options: [
+                    "A) Rosca completa hasta la punta.",
+                    "B) Entrada cónica larga para iniciar el roscado paulatinamente.",
+                    "C) Rosca a izquierda únicamente.",
+                    "D) Un diámetro mayor al nominal."
+                ],
+                correct: 1,
+                explanation: "El primer machuelo (machuelo cónico o de entrada) posee un **bisel largo de varios hilos** para guiar el roscado inicialmente sin sobrecargar los dientes."
+            },
+            {
+                id: 31,
+                subarea: "Ajustes y Tolerancias",
+                text: "Cuando el límite mínimo del agujero es mayor que el límite máximo del eje, el ajuste resultante siempre será de:",
+                options: ["A) Interferencia o apriete", "B) Juego o holgura", "C) Transición e incierto", "D) Apretado a prensa"],
+                correct: 1,
+                explanation: "Si el agujero es en todo caso más grande que el eje, existe espacio libre; por lo tanto, es un **ajuste con juego o holgura**."
+            },
+            {
+                id: 32,
+                subarea: "Tratamientos Térmicos",
+                text: "El tratamiento térmico que se aplica obligatoriamente después del temple para aliviar tensiones internas y reducir la fragilidad se llama:",
+                options: ["A) Cementación", "B) Revenido", "C) Recocido de regeneración", "D) Cianuración"],
+                correct: 1,
+                explanation: "El **revenido** siempre sigue al temple para reducir la fragilidad del material calentándolo a temperaturas inferiores al punto crítico."
+            },
+            {
+                id: 33,
+                subarea: "Programación CNC",
+                text: "El comando G00 se utiliza exclusivamente para realizar:",
+                options: [
+                    "A) Cortes en línea recta a la velocidad F programada.",
+                    "B) Posicionamiento o desplazamiento rápido sin contacto con la pieza.",
+                    "C) Roscado automático.",
+                    "D) Detención del husillo."
+                ],
+                correct: 1,
+                explanation: "<b>G00</b> desplaza los ejes a la máxima velocidad de la máquina para posicionamiento sin realizar mecanizado."
+            },
+            {
+                id: 34,
+                subarea: "Engranajes Rectos",
+                text: "La altura total del diente (h) de un engranaje recto métrico de Módulo M equivale a:",
+                options: ["A) 2,166 × M", "B) 1,000 × M", "C) 3,1416 × M", "D) 0,500 × M"],
+                correct: 0,
+                explanation: "La altura total del diente es h = ha + hf = 1,00M + 1,166M = <b>2,166 × M</b>."
+            },
+            {
+                id: 35,
+                subarea: "Soldadura por Arco",
+                text: "Para evitar la sopladura del arco eléctrico por magnetismo en soldadura SMAW de corriente continua, se debe:",
+                options: [
+                    "A) Incrementar el amperaje al máximo.",
+                    "B) Cambiar la posición de la toma de tierra (masa) o usar corriente alterna.",
+                    "C) Soldar sin gas protector.",
+                    "D) Usar electrodos de mayor diámetro."
+                ],
+                correct: 1,
+                explanation: "El soplo magnético se reduce o elimina cambiando la posición de la conexión a tierra o cambiando a **corriente alterna (AC)**."
+            },
+            {
+                id: 36,
+                subarea: "Dibujo Técnico",
+                text: "Una escala rotulada como 1:5 en un plano mecánico corresponde a una escala de:",
+                options: ["A) Ampliación", "B) Reducción", "C) Tamaño natural", "D) Proporción no lineal"],
+                correct: 1,
+                explanation: "1:5 indica que 1 unidad en el dibujo equivale a 5 unidades reales en la pieza; por lo tanto, es una **escala de reducción**."
+            },
+            {
+                id: 37,
+                subarea: "Fresadora",
+                text: "La operación de fresado destinada a obtener una superficie plana paralela al eje de rotación de la fresa usando una fresa cilíndrica se denomina:",
+                options: ["A) Planeado frontal", "B) Fresado tangencial o periférico", "C) Ranurado de chaveteros", "D) Taladrado profundo"],
+                correct: 1,
+                explanation: "En el **fresado tangencial o periférico**, la superficie se genera por los dientes ubicados en la periferia cilíndrica del útil."
+            },
+            {
+                id: 38,
+                subarea: "Gestión de Calidad",
+                text: "El concepto de 'Calidad Total' (TQM) implica:",
+                options: [
+                    "A) Inspeccionar el producto únicamente al final de la línea.",
+                    "B) La participación de todos los departamentos y empleados para la mejora continua en todos los procesos.",
+                    "C) Aumentar los costos de producción.",
+                    "D) Eliminar las normas ISO."
+                ],
+                correct: 1,
+                explanation: "La **Calidad Total** abarca la satisfacción del cliente y la mejora continua involucrando a todo el personal y etapas de la empresa."
+            },
+            {
+                id: 39,
+                subarea: "Taladrado y Avellanado",
+                text: "La herramienta empleada para ensanchar en forma cónica la entrada de un agujero previo y alojar la cabeza de un tornillo remachado es el:",
+                options: ["A) Escariador manual", "B) Machuelo de roscar", "C) Avellanador cónico", "D) Mandril independiente"],
+                correct: 2,
+                explanation: "El **avellanador cónico** mecaniza un bisel de entrada cónico para alojar tornillos de cabeza avellanada."
+            },
+            {
+                id: 40,
+                subarea: "Programación CNC",
+                text: "En un torno CNC, la dirección del eje Z coincide con:",
+                options: [
+                    "A) El movimiento transversal de la torreta.",
+                    "B) El eje principal de rotación del husillo.",
+                    "C) El movimiento vertical perpendicular.",
+                    "D) El plato de garras manualmente."
+                ],
+                correct: 1,
+                explanation: "En la norma normalizada para tornos CNC, el **Eje Z** es siempre paralelo/coincidente con el eje del husillo principal de rotación."
+            },
+            {
+                id: 41,
+                subarea: "Metrología Dimensional",
+                text: "Un micrómetro con vernier incorpora una escala secundaria que permite lecturas en milímetros de hasta:",
+                options: ["A) 0,1 mm", "B) 0,01 mm", "C) 0,001 mm (una micra)", "D) 0,0001 mm"],
+                correct: 2,
+                explanation: "La escala vernier del micrómetro divide la graduación del tambor (0,01 mm) entre 10, alcanzando **0,001 mm (1 micra)** de resolución."
+            },
+            {
+                id: 42,
+                subarea: "Mecanizado por Torno",
+                text: "Al cilindrar una pieza de aluminio de 80 mm de diámetro a Vc = 120 m/min, la velocidad angular N (RPM) es aproximadamente:",
+                options: ["A) 477 RPM", "B) 955 RPM", "C) 1200 RPM", "D) 240 RPM"],
+                correct: 0,
+                explanation: "N = (120 × 1000) / (3,1416 × 80) = 120000 / 251,328 ≈ <b>477 RPM</b>."
+            },
+            {
+                id: 43,
+                subarea: "Soldadura por Arco",
+                text: "Un electrodo recubierto E-6013 presenta un esfuerzo mínimo a la ruptura por tensión de:",
+                options: ["A) 600 PSI", "B) 60.000 PSI", "C) 6.000 PSI", "D) 13.000 PSI"],
+                correct: 1,
+                explanation: "Los dos primeros dígitos (60) multiplicados por 1000 representan **60.000 PSI** de resistencia a la tensión."
+            },
+            {
+                id: 44,
+                subarea: "Siderurgia y Materiales",
+                text: "Las aleaciones de hierro y carbono con contenidos de carbono superiores al 2,11% hasta un 6,67% se clasifican como:",
+                options: ["A) Aceros inoxidables", "B) Fundiciones o hierros colados", "C) Bronces al aluminio", "D) Duraluminio"],
+                correct: 1,
+                explanation: "Las aleaciones Fe-C con C > 2,11% son **fundiciones** (o hierros colados), las cuales son frágiles y no forjables."
+            },
+            {
+                id: 45,
+                subarea: "Mantenimiento y Lubricación",
+                text: "La función principal del fluido de corte (taladrina / soluble) durante el mecanizado de metales es:",
+                options: [
+                    "A) Pulir la superficie sin remover viruta.",
+                    "B) Refrigerar la zona de corte y lubricar la interfaz herramienta-viruta.",
+                    "C) Aumentar la dureza de la pieza.",
+                    "D) Evitar la oxidación de las bancadas únicamente."
+                ],
+                correct: 1,
+                explanation: "Los fluidos de corte cumplen la función dual de **disipar el calor (refrigerar)** y reducir la fricción (lubricar) en la herramienta."
+            },
+            {
+                id: 46,
+                subarea: "Programación CNC",
+                text: "El código G21 en un control CNC establece que las dimensiones de entrada están en:",
+                options: ["A) Pulgadas", "B) Milímetros", "C) Grados sexagesimales", "D) Radianes"],
+                correct: 1,
+                explanation: "<b>G21</b> configura el sistema en unidades métricas (**milímetros**), mientras que G20 es en pulgadas."
+            },
+            {
+                id: 47,
+                subarea: "Herramientas de Banco",
+                text: "El proceso manual de acabado pulido de alta precisión utilizando un abrasivo fino mezclado con aceite se denomina:",
+                options: ["A) Roscado", "B) Lapidado o Lapeado", "C) Cisallado", "D) Moleteado"],
+                correct: 1,
+                explanation: "El **lapeado** es una operación de superacabado abrasivo para lograr tolerancias estrictas y rugosidades superficiales reducidas."
+            },
+            {
+                id: 48,
+                subarea: "Ajustes y Tolerancias",
+                text: "En la cota ⌀30 ± 0,05 mm, el Límite Máximo admisible de la pieza es:",
+                options: ["A) 30,05 mm", "B) 29,95 mm", "C) 30,50 mm", "D) 30,00 mm"],
+                correct: 0,
+                explanation: "Límite Máximo = Valor nominal + Tolerancia superior = 30,00 + 0,05 = <b>30,05 mm</b>."
+            },
+            {
+                id: 49,
+                subarea: "Fresadora",
+                text: "Al utilizar el plato divisor universal, la división directa se realiza utilizando el:",
+                options: [
+                    "A) Disco ranurado ubicado directamente en el husillo del divisor.",
+                    "B) Par de engranajes helicoidales traseros.",
+                    "C) Mecanismo sinfín-corona únicamente.",
+                    "D) Carro longitudinal manualmente."
+                ],
+                correct: 0,
+                explanation: "La **división directa** desacopla la corona y utiliza un plato con muescas o orificios montado al frente del husillo del plato."
+            },
+            {
+                id: 50,
+                subarea: "Seguridad Industrial",
+                text: "El elemento de protección personal (EPP) que está estrictamente PROHIBIDO usar durante la operación del torno o la fresadora por riesgo de atrapamiento es:",
+                options: ["A) Gafas de seguridad", "B) Calzado de seguridad", "C) Guantes de tela o cuero", "D) Protector auditivo"],
+                correct: 2,
+                explanation: "Los **guantes** no deben usarse al operar máquinas con ejes rotativos debido al riesgo de ser arrastrados por la máquina."
+            },
+            {
+                id: 51,
+                subarea: "Siderurgia",
+                text: "Los elementos aleantes principales presentes en un acero inoxidable austenítico serie 304 son:",
+                options: [
+                    "A) Cobre y Zinc",
+                    "B) Cromo (18%) y Níquel (8%)",
+                    "C) Tungsteno y Cobalto",
+                    "D) Plomo y Azufre"
+                ],
+                correct: 1,
+                explanation: "El acero inoxidable 18/8 (serie 304) contiene aproximadamente **18% de Cromo y 8% de Níquel**."
+            },
+            {
+                id: 52,
+                subarea: "Programación CNC",
+                text: "El código M06 en una fresadora CNC ejecuta la función de:",
+                options: [
+                    "A) Paro opcional del programa.",
+                    "B) Cambio automático de herramienta.",
+                    "C) Giro a la izquierda del husillo.",
+                    "D) Apagado general."
+                ],
+                correct: 1,
+                explanation: "<b>M06</b> indica al cargador automático que efectúe el **cambio de la herramienta** activa."
+            },
+            {
+                id: 53,
+                subarea: "Metrología Dimensional",
+                text: "Un goniómetro o transportador universal con vernier permite medir ángulos con una precisión de hasta:",
+                options: ["A) 1 grado", "B) 5 minutos de arco (5')", "C) 1 segundo de arco", "D) 10 grados"],
+                correct: 1,
+                explanation: "El goniómetro de precisión con escala vernier permite dividir cada grado en 12 partes, obteniendo **5 minutos (5')** de precisión."
+            },
+            {
+                id: 54,
+                subarea: "Mecanizado por Torno",
+                text: "El moleteado en el torno es una operación de mecanizado que se realiza por:",
+                options: [
+                    "A) Desprendimiento de viruta continua.",
+                    "B) Deformación plástica en frío de la superficie de la pieza mediante moletas.",
+                    "C) Abrasión térmica.",
+                    "D) Soldadura por presión."
+                ],
+                correct: 1,
+                explanation: "El moleteado es un conformado sin arranque de viruta que produce un grabado estriado por **deformación plástica en frío**."
+            },
+            {
+                id: 55,
+                subarea: "Tratamientos Térmicos",
+                text: "La cementación es un tratamiento termoquímico que consiste en enriquecer la capa superficial del acero blando con:",
+                options: ["A) Nitrógeno", "B) Carbono", "C) Aluminio", "D) Cobre"],
+                correct: 1,
+                explanation: "La **cementación** aporta **carbono** a la superficie de un acero de bajo carbono para incrementar su dureza tras el temple, manteniendo un núcleo tenaz."
+            },
+            {
+                id: 56,
+                subarea: "Dibujo Técnico",
+                text: "Una línea fina continua con zigzag en dibujo técnico se utiliza para indicar:",
+                options: [
+                    "A) Aristas visibles.",
+                    "B) Contornos ocultos.",
+                    "C) Interrupción o rotura de piezas largas.",
+                    "D) Ejes de simetría."
+                ],
+                correct: 2,
+                explanation: "Las líneas de rotura en zigzag se emplean para **interrumpir la representación** de piezas extensas y simplificar el dibujo."
+            },
+            {
+                id: 57,
+                subarea: "Matricería",
+                text: "En el conformado de chapas metálicas, la operación de separar una porción de chapa siguiendo un contorno cerrado mediante punzón y matriz se denomina:",
+                options: ["A) Embutido", "B) Plegado", "C) Punzonado o Troquelado de corte", "D) Extrusión"],
+                correct: 2,
+                explanation: "El **troquelado de corte o punzonado** separa material metálico de una lámina usando la acción combinada de punzón y matriz."
+            },
+            {
+                id: 58,
+                subarea: "Programación CNC",
+                text: "El código M30 ubicado al final de un programa CNC indica:",
+                options: [
+                    "A) Paro temporal para medir.",
+                    "B) Fin del programa con retorno al bloque inicial.",
+                    "C) Apagado de la bomba hidráulica.",
+                    "D) Compensación de longitud."
+                ],
+                correct: 1,
+                explanation: "<b>M30</b> finaliza la ejecución del programa, detiene los auxiliares y restablece el puntero al **inicio del código**."
+            },
+            {
+                id: 59,
+                subarea: "Engranajes Rectos",
+                text: "La distancia comprendida entre dos puntos homólogos de dos dientes consecutivos medida sobre la circunferencia primitiva se denomina:",
+                options: ["A) Módulo", "B) Paso circular (P)", "C) Juego entre dientes", "D) Espesor del diente"],
+                correct: 1,
+                explanation: "El **Paso circular (P)** es la longitud de arco sobre la circunferencia primitiva entre perfiles homólogos continuos: P = π × M."
+            },
+            {
+                id: 60,
+                subarea: "Gestión y Emprendimiento",
+                text: "Los costos que permanecen constantes en su valor total independientemente de las variaciones en el volumen de producción (ejemplo: alquiler del taller) se denominan:",
+                options: ["A) Costos variables", "B) Costos fijos", "C) Costos marginales", "D) Gastos de oportunidad"],
+                correct: 1,
+                explanation: "Los **costos fijos** (como el alquiler, seguros y salarios administrativos) no cambian con la cantidad de unidades fabricadas."
+            }
+        ];
+
+        // Estado global del examen
+        let currentIdx = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let flaggedQuestions = new Array(questions.length).fill(false);
+
+        // Inicializar interfaz
+        window.onload = function() {
+            renderGrid();
+            loadQuestion(0);
+        };
+
+        function renderGrid() {
+            const grid = document.getElementById('question-grid');
+            grid.innerHTML = '';
+            for (let i = 0; i < questions.length; i++) {
+                const item = document.createElement('div');
+                item.className = 'grid-item' + (i === currentIdx ? ' active' : '');
+                item.innerText = i + 1;
+                item.onclick = () => loadQuestion(i);
+                item.id = `grid-item-${i}`;
+                grid.appendChild(item);
+            }
+            updateSummary();
+        }
+
+        function loadQuestion(idx) {
+            currentIdx = idx;
+            const q = questions[idx];
+
+            document.getElementById('q-number').innerText = `Pregunta ${idx + 1} de ${questions.length}`;
+            document.getElementById('q-subarea').innerText = `Subárea: ${q.subarea}`;
+            document.getElementById('q-text').innerHTML = q.text;
+
+            // Mostrar contenedor gráfico si aplica
+            const imgContainer = document.getElementById('q-image-container');
+            if (q.imageSVG) {
+                imgContainer.style.display = 'block';
+                imgContainer.innerHTML = q.imageSVG;
+            } else {
+                imgContainer.style.display = 'none';
+                imgContainer.innerHTML = '';
+            }
+
+            // Renderizar Opciones de Respuesta
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            q.options.forEach((opt, i) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                if (userAnswers[idx] === i) btn.classList.add('selected');
+
+                if (userAnswers[idx] !== null) {
+                    if (i === q.correct) btn.classList.add('correct');
+                    if (userAnswers[idx] === i && i !== q.correct) btn.classList.add('incorrect');
+                }
+
+                btn.onclick = () => selectOption(i);
+
+                const letters = ['A', 'B', 'C', 'D'];
+                btn.innerHTML = `
+                    <div class="option-letter">${letters[i]}</div>
+                    <div>${opt.substring(3)}</div>
+                `;
+                container.appendChild(btn);
+            });
+
+            // Explicación Técnica
+            const expBox = document.getElementById('explanation-box');
+            if (userAnswers[idx] !== null) {
+                expBox.style.display = 'block';
+                document.getElementById('explanation-text').innerHTML = q.explanation;
+            } else {
+                expBox.style.display = 'none';
+            }
+
+            // Actualizar Botones de Control
+            document.getElementById('btn-prev').disabled = idx === 0;
+            document.getElementById('btn-next').innerText = idx === questions.length - 1 ? 'Revisar Práctica' : 'Siguiente';
+            
+            const flagBtn = document.getElementById('btn-flag');
+            if (flaggedQuestions[idx]) {
+                flagBtn.style.background = '#ffe0b2';
+                flagBtn.innerText = '★ Marcada para revisión';
+            } else {
+                flagBtn.style.background = '#fff3e0';
+                flagBtn.innerText = '☆ Marcar para revisión';
+            }
+
+            highlightGrid();
+        }
+
+        function selectOption(optionIdx) {
+            userAnswers[currentIdx] = optionIdx;
+            loadQuestion(currentIdx);
+            updateSummary();
+        }
+
+        function changeQuestion(dir) {
+            let newIdx = currentIdx + dir;
+            if (newIdx >= 0 && newIdx < questions.length) {
+                loadQuestion(newIdx);
+            } else if (newIdx >= questions.length) {
+                finishQuiz();
+            }
+        }
+
+        function toggleFlag() {
+            flaggedQuestions[currentIdx] = !flaggedQuestions[currentIdx];
+            loadQuestion(currentIdx);
+            updateSummary();
+        }
+
+        function highlightGrid() {
+            for (let i = 0; i < questions.length; i++) {
+                const item = document.getElementById(`grid-item-${i}`);
+                if (item) {
+                    item.className = 'grid-item';
+                    if (i === currentIdx) item.classList.add('active');
+                    if (userAnswers[i] !== null) item.classList.add('answered');
+                    if (flaggedQuestions[i]) item.classList.add('flagged');
+                }
+            }
+        }
+
+        function updateSummary() {
+            const answered = userAnswers.filter(a => a !== null).length;
+            const flagged = flaggedQuestions.filter(f => f).length;
+            const pending = questions.length - answered;
+
+            document.getElementById('count-answered').innerText = answered;
+            document.getElementById('count-flagged').innerText = flagged;
+            document.getElementById('count-pending').innerText = pending;
+        }
+
+        function finishQuiz() {
+            document.getElementById('quiz-panel').style.display = 'none';
+            document.getElementById('results-panel').style.display = 'block';
+
+            let correctCount = 0;
+            for (let i = 0; i < questions.length; i++) {
+                if (userAnswers[i] === questions[i].correct) {
+                    correctCount++;
+                }
+            }
+
+            const percentage = ((correctCount / questions.length) * 100).toFixed(1);
+            document.getElementById('score-val').innerText = `${percentage}%`;
+            
+            const status = document.getElementById('score-status');
+            if (percentage >= 70) {
+                status.innerText = "¡APROBADO! (Dominio de la Especialidad)";
+                status.style.color = "var(--mep-correcto)";
+            } else {
+                status.innerText = "REQUIERE REFUERZO TEÓRICO-PRÁCTICO";
+                status.style.color = "var(--mep-incorrecto)";
+            }
+
+            document.getElementById('score-details').innerText = `Usted respondió correctamente ${correctCount} de ${questions.length} preguntas evaluadas.`;
+        }
+
+        function restartQuiz() {
+            userAnswers = new Array(questions.length).fill(null);
+            flaggedQuestions = new Array(questions.length).fill(false);
+            document.getElementById('results-panel').style.display = 'none';
+            document.getElementById('quiz-panel').style.display = 'flex';
+            loadQuestion(0);
+        }
+    </script>
+</body>
+</html>
